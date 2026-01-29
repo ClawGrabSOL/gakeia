@@ -1,0 +1,17 @@
+{
+  "name": "gakeai-buyback",
+  "version": "1.0.0",
+  "description": "$GakeAI Automated Buyback Bot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.87.6",
+    "bs58": "^5.0.0",
+    "ws": "^8.16.0"
+  }
+}

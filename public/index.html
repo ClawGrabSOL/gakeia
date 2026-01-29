@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$GakeAI - Automated Buyback</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            margin-bottom: 60px;
+            background: #222;
+        }
+
+        .stat-card {
+            background: #000;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Live Feed */
+        .feed-section {
+            border: 1px solid #222;
+        }
+
+        .feed-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .feed-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .feed-status {
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #feed-container {
+            height: 420px;
+            overflow-y: auto;
+        }
+
+        #feed-container::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .feed-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #111;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feed-item:hover {
+            background: #0a0a0a;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feed-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .feed-icon {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            color: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .feed-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .feed-action {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .feed-details {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .feed-amount {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .feed-right {
+            text-align: right;
+        }
+
+        .feed-time {
+            font-size: 0.75rem;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .feed-tx {
+            font-size: 0.7rem;
+            color: #333;
+            text-decoration: none;
+            font-family: monospace;
+        }
+
+        .feed-tx:hover {
+            color: #fff;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #333;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+        }
+
+        footer p {
+            color: #333;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        footer a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: #fff;
+        }
+
+        .links {
+            margin-top: 16px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .logo {
+                font-size: 2.8rem;
+            }
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">$GAKEAI</h1>
+            <p class="tagline">Automated Buyback Protocol</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Buybacks</div>
+                <div class="stat-value" id="total-buybacks">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">SOL Spent</div>
+                <div class="stat-value" id="total-sol">0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Tokens Bought</div>
+                <div class="stat-value" id="total-tokens">0</div>
+            </div>
+        </div>
+
+        <div class="feed-section">
+            <div class="feed-header">
+                <div class="feed-title">
+                    <span class="live-dot"></span>
+                    Live Feed
+                </div>
+                <div class="feed-status" id="status">Connecting</div>
+            </div>
+            <div id="feed-container">
+                <div class="empty-state">
+                    <div class="icon">◉</div>
+                    <p>Waiting for buybacks</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Buyback every 20 seconds • 0.01 SOL</p>
+            <div class="links">
+                <a href="#" id="token-link" target="_blank">Token</a>
+                <a href="#" id="wallet-link" target="_blank">Wallet</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let totalBuybacks = 0;
+        let totalSol = 0;
+        let totalTokens = 0;
+        let ws;
+
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${window.location.host}`);
+            
+            ws.onopen = () => {
+                document.getElementById('status').textContent = 'Live';
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'buyback') {
+                    addBuyback(data);
+                } else if (data.type === 'stats') {
+                    updateStats(data);
+                } else if (data.type === 'config') {
+                    if (data.tokenAddress) {
+                        document.getElementById('token-link').href = `https://solscan.io/token/${data.tokenAddress}`;
+                    }
+                    if (data.walletAddress) {
+                        document.getElementById('wallet-link').href = `https://solscan.io/account/${data.walletAddress}`;
+                    }
+                }
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('status').textContent = 'Reconnecting';
+                setTimeout(connect, 3000);
+            };
+        }
+
+        function addBuyback(data) {
+            const container = document.getElementById('feed-container');
+            
+            const empty = container.querySelector('.empty-state');
+            if (empty) empty.remove();
+            
+            totalBuybacks++;
+            totalSol += data.solSpent || 0;
+            totalTokens += data.tokensReceived || 0;
+            
+            document.getElementById('total-buybacks').textContent = totalBuybacks;
+            document.getElementById('total-sol').textContent = totalSol.toFixed(2);
+            document.getElementById('total-tokens').textContent = formatNumber(totalTokens);
+            
+            const item = document.createElement('div');
+            item.className = 'feed-item';
+            
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            const txShort = data.txHash ? data.txHash.slice(0, 6) + '...' + data.txHash.slice(-4) : '';
+            
+            item.innerHTML = `
+                <div class="feed-left">
+                    <div class="feed-icon">↑</div>
+                    <div class="feed-content">
+                        <div class="feed-action">Buyback</div>
+                        <div class="feed-details">
+                            <span class="feed-amount">${(data.solSpent || 0).toFixed(4)} SOL</span> → ${formatNumber(data.tokensReceived || 0)} tokens
+                        </div>
+                    </div>
+                </div>
+                <div class="feed-right">
+                    <div class="feed-time">${time}</div>
+                    ${data.txHash ? `<a class="feed-tx" href="https://solscan.io/tx/${data.txHash}" target="_blank">${txShort}</a>` : ''}
+                </div>
+            `;
+            
+            container.insertBefore(item, container.firstChild);
+            
+            while (container.children.length > 50) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function updateStats(data) {
+            if (data.totalBuybacks !== undefined) {
+                totalBuybacks = data.totalBuybacks;
+                document.getElementById('total-buybacks').textContent = totalBuybacks;
+            }
+            if (data.totalSol !== undefined) {
+                totalSol = data.totalSol;
+                document.getElementById('total-sol').textContent = totalSol.toFixed(2);
+            }
+            if (data.totalTokens !== undefined) {
+                totalTokens = data.totalTokens;
+                document.getElementById('total-tokens').textContent = formatNumber(totalTokens);
+            }
+        }
+
+        function formatNumber(num) {
+            if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+            return Math.floor(num).toLocaleString();
+        }
+
+        connect();
+    </script>
+</body>
+</html>
